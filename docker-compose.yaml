@@ -1,0 +1,33 @@
+services:
+  zentra-cart-service-postgres:
+    container_name: zentra-cart-service-postgres
+    image: postgres:16.0
+    ports:
+      - 5436:5432
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - type: volume
+        source: zentra-cart-service-postgres-data
+        target: /var/lib/postgresql/data
+      - type: bind
+        source: ./doc/database/postgresql/postgresql.conf
+        target: /etc/postgresql/postgresql.conf
+    networks:
+      - zentra-network
+      - zentra-cart-service-network
+    command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]
+    restart: on-failure
+
+volumes:
+  zentra-cart-service-postgres-data:
+    name: zentra-cart-service-postgres-data
+
+networks:
+  zentra-cart-service-network:
+    name: zentra-cart-service-network
+    driver: bridge
+  zentra-network:
+    name: zentra-network
+    external: true
