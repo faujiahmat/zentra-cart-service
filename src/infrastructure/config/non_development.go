@@ -24,7 +24,7 @@ func setUpForNonDevelopment(appStatus string) *Config {
 
 	mountPath := "zentra-secrets" + "-" + strings.ToLower(appStatus)
 
-	cartServiceSecrets, err := client.KVv2(mountPath).Get(context.Background(), "cartt-service")
+	cartServiceSecrets, err := client.KVv2(mountPath).Get(context.Background(), "cart-service")
 	if err != nil {
 		log.Logger.WithFields(logrus.Fields{"location": "config.setUpForNonDevelopment", "section": "KVv2.Get"}).Fatal(err)
 	}

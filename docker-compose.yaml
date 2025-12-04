@@ -20,10 +20,31 @@ services:
     command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]
     restart: on-failure
 
+  zentra-cart-service:
+    image: zentra-cart-service:latest
+    container_name: zentra-cart-service
+    ports:
+      - "3600:3600"
+      - "4600:4600"
+    networks:
+      - zentra-network
+      - zentra-cart-service-network
+    depends_on:
+      - zentra-cart-service-postgres
+    environment:
+      - ZENTRA_APP_STATUS=PRODUCTION
+      - ZENTRA_CONFIG_ADDRESS=[vault_address]
+      - ZENTRA_CONFIG_TOKEN=[vault_token]
+    volumes:
+      - ./workspace:/app/workspace
+      - zentra-cart-service-logs:/app
+    restart: on-failure
+
 volumes:
   zentra-cart-service-postgres-data:
     name: zentra-cart-service-postgres-data
-
+  zentra-cart-service-logs:
+    name: zentra-cart-service-logs
 networks:
   zentra-cart-service-network:
     name: zentra-cart-service-network

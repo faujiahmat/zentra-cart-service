@@ -64,12 +64,27 @@ func loadRSAPrivateKey(privateKey string) *rsa.PrivateKey {
 		}).Fatal("failed to parse pem block containing the key")
 	}
 
+	// Coba PKCS#1 dulu
 	rsaPrivateKey, err := x509.ParsePKCS1PrivateKey(block.Bytes)
+	if err == nil {
+		return rsaPrivateKey
+	}
+
+	// Kalau gagal, berarti PKCS#8
+	key, err := x509.ParsePKCS8PrivateKey(block.Bytes)
 	if err != nil {
 		log.Logger.WithFields(logrus.Fields{
 			"location": "config.loadRSAPrivateKey",
-			"section":  "x509.ParsePKCS1PrivateKey",
+			"section":  "x509.ParsePKCS8PrivateKey",
 		}).Fatalf("failed to parse rsa private key: %v", err)
+	}
+
+	rsaPrivateKey, ok := key.(*rsa.PrivateKey)
+	if !ok {
+		log.Logger.WithFields(logrus.Fields{
+			"location": "config.loadRSAPrivateKey",
+			"section":  "type assertion",
+		}).Fatal("failed to assert type to *rsa.PrivateKey")
 	}
 
 	return rsaPrivateKey

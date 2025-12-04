@@ -3,3 +3,5 @@ dummy*.*
 dummy/
 cmd/main
 app.log
+script.sh
+workspace
